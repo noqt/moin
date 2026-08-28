@@ -40,10 +40,27 @@ jobs:
         run: bandit -c pyproject.toml -r src/moin -f sarif -o results.sarif || true
 
       - name: Prioritise Bandit findings with Lumi Trace (optional)
+        id: lumi
         continue-on-error: true
         uses: noqt/Lumi-Trace@60ceacaa5b92718cc50bbed4e5ce34da7e85e093 # v0.10.0
         with:
           sarif: results.sarif
+
+      - name: Report Bandit and Lumi diagnostic counts
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+
+          with open("results.sarif", encoding="utf-8") as stream:
+              report = json.load(stream)
+          count = sum(len(run.get("results", [])) for run in report.get("runs", []))
+          print(f"Bandit SARIF results: {count}")
+          PY
+          echo "Lumi status: ${{ steps.lumi.outputs.status }}"
+          echo "Lumi exit code: ${{ steps.lumi.outputs.exit-code }}"
+          echo "Lumi package ready: ${{ steps.lumi.outputs.package-ready }}"
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v4
