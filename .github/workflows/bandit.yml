@@ -42,7 +42,7 @@ jobs:
       - name: Prioritise Bandit findings with Lumi Trace (optional)
         id: lumi
         continue-on-error: true
-        uses: noqt/Lumi-Trace@60ceacaa5b92718cc50bbed4e5ce34da7e85e093 # v0.10.0
+        uses: noqt/Lumi-Trace@efacb5784604ed98bf608732832db938eefbd295 # v0.10.0
         with:
           sarif: results.sarif
 
