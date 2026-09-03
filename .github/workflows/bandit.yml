@@ -16,6 +16,10 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   bandit_check:
 
@@ -63,6 +67,7 @@ jobs:
           echo "Lumi package ready: ${{ steps.lumi.outputs.package-ready }}"
 
       - name: Upload SARIF file
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
